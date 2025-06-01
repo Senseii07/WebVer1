@@ -52,60 +52,78 @@ window.addEventListener('scroll', () => {
 // Enhanced mobile menu handling
 let touchStartX = 0;
 let touchEndX = 0;
+let menuOpen = false;
 
+// Touch event handlers for mobile menu
 burger.addEventListener('touchstart', (e) => {
     touchStartX = e.changedTouches[0].screenX;
-});
+    e.preventDefault();
+}, { passive: false });
 
 burger.addEventListener('touchend', (e) => {
     touchEndX = e.changedTouches[0].screenX;
     handleSwipe();
-});
+    e.preventDefault();
+}, { passive: false });
 
+// Close menu when clicking outside
+const handleClickOutside = (e) => {
+    if (menuOpen && !nav.contains(e.target) && !burger.contains(e.target)) {
+        toggleMenu();
+    }
+};
+
+// Handle menu toggling
+function toggleMenu() {
+    nav.classList.toggle('active');
+    burger.classList.toggle('active');
+    menuOpen = !menuOpen;
+    
+    if (menuOpen) {
+        document.body.style.overflow = 'hidden';
+        document.addEventListener('click', handleClickOutside);
+    } else {
+        document.body.style.overflow = '';
+        document.removeEventListener('click', handleClickOutside);
+    }
+    
+    // Animate menu items
+    const navLinks = document.querySelectorAll('.nav-links a');
+    navLinks.forEach((link, index) => {
+        if (menuOpen) {
+            link.style.animation = `navLinkFade 0.5s ease forwards ${index / 7 + 0.3}s`;
+        } else {
+            link.style.animation = '';
+        }
+    });
+}
+
+// Handle swipe gestures
 function handleSwipe() {
     const swipeThreshold = 50;
-    if (touchEndX - touchStartX > swipeThreshold) {
-        // Swipe right - open menu
-        if (!nav.classList.contains('active')) {
+    if (Math.abs(touchEndX - touchStartX) > swipeThreshold) {
+        if (touchEndX > touchStartX && !menuOpen) {
+            // Swipe right - open menu
             toggleMenu();
-        }
-    } else if (touchStartX - touchEndX > swipeThreshold) {
-        // Swipe left - close menu
-        if (nav.classList.contains('active')) {
+        } else if (touchEndX < touchStartX && menuOpen) {
+            // Swipe left - close menu
             toggleMenu();
         }
     }
 }
 
-function toggleMenu() {
-    nav.classList.toggle('active');
-    burger.classList.toggle('toggle');
-    
-    // Animate links
-    navLinks.forEach((link, index) => {
-        if (link.style.animation) {
-            link.style.animation = '';
-        } else {
-            link.style.animation = `navLinkFade 0.5s ease forwards ${index / 7 + 0.3}s`;
+// Close menu when clicking on a nav link
+navLinks.forEach(link => {
+    link.addEventListener('click', () => {
+        if (menuOpen) {
+            toggleMenu();
         }
     });
-    
-    // Prevent body scroll when menu is open
-    document.body.style.overflow = nav.classList.contains('active') ? 'hidden' : '';
-}
+});
 
 burger.addEventListener('click', () => {
     toggleMenu();
     createGlitchEffect(burger);
-});
-
-// Close menu when clicking outside
-document.addEventListener('click', (e) => {
-    if (nav.classList.contains('active') && 
-        !nav.contains(e.target) && 
-        !burger.contains(e.target)) {
-        toggleMenu();
-    }
 });
 
 // Smooth scrolling with offset

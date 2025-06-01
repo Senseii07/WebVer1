@@ -474,6 +474,10 @@ footer {
 
 /* Responsive Design */
 @media screen and (max-width: 768px) {
+    html {
+        font-size: 14px;
+    }
+    
     .navbar {
         padding: 0.8rem 5%;
     }
@@ -502,11 +506,14 @@ footer {
     }
 
     .nav-links a {
-        font-size: 1.2rem;
-        margin: 1rem 0;
+        font-size: 1.1rem;
+        margin: 0.8rem 0;
         opacity: 0;
-        transform: translateX(50px);
-        transition: all 0.3s ease;
+        transform: translateX(30px);
+        transition: all 0.4s ease;
+        padding: 0.5rem 1rem;
+        display: block;
+        text-align: center;
     }
 
     .nav-links.active a {
@@ -514,18 +521,14 @@ footer {
         transform: translateX(0);
     }
 
-    .burger {
-        display: block;
-        z-index: 1001;
-    }
-
     .hero-content {
         padding: 0 1rem;
     }
 
     .hero-content h1 {
-        font-size: 2.5rem;
+        font-size: 2rem;
         line-height: 1.2;
+        margin-bottom: 1rem;
     }
 
     .hero-content p {
@@ -538,13 +541,19 @@ footer {
         font-size: 0.9rem;
     }
 
-    .about, .projects, .contact {
-        padding: 3rem 5%;
+    .about, .projects, .contact, .skills {
+        padding: 2.5rem 1rem;
+    }
+    
+    .section-title {
+        font-size: 1.8rem !important;
+        margin-bottom: 2rem !important;
     }
 
     .project-grid {
         grid-template-columns: 1fr;
         gap: 1.5rem;
+        padding: 0 1rem;
     }
 
     .project-card {
@@ -569,8 +578,10 @@ footer {
     }
 
     input, textarea {
-        padding: 0.8rem;
-        font-size: 0.9rem;
+        padding: 1rem;
+        font-size: 1rem;
+        border: 1px solid var(--border-color);
+        background: rgba(20, 20, 30, 0.9);
     }
 
     .submit-btn {
@@ -595,8 +606,11 @@ footer {
 }
 
 @media screen and (max-width: 480px) {
+    html {
+        font-size: 13px;
+    }
     .hero-content h1 {
-        font-size: 2rem;
+        font-size: 1.75rem;
     }
 
     .hero-content p {
