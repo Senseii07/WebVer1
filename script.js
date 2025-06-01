@@ -49,10 +49,37 @@ window.addEventListener('scroll', () => {
     }
 });
 
-// Navigation menu toggle
-burger.addEventListener('click', () => {
-    // Toggle navigation
+// Enhanced mobile menu handling
+let touchStartX = 0;
+let touchEndX = 0;
+
+burger.addEventListener('touchstart', (e) => {
+    touchStartX = e.changedTouches[0].screenX;
+});
+
+burger.addEventListener('touchend', (e) => {
+    touchEndX = e.changedTouches[0].screenX;
+    handleSwipe();
+});
+
+function handleSwipe() {
+    const swipeThreshold = 50;
+    if (touchEndX - touchStartX > swipeThreshold) {
+        // Swipe right - open menu
+        if (!nav.classList.contains('active')) {
+            toggleMenu();
+        }
+    } else if (touchStartX - touchEndX > swipeThreshold) {
+        // Swipe left - close menu
+        if (nav.classList.contains('active')) {
+            toggleMenu();
+        }
+    }
+}
+
+function toggleMenu() {
     nav.classList.toggle('active');
+    burger.classList.toggle('toggle');
     
     // Animate links
     navLinks.forEach((link, index) => {
@@ -63,22 +90,22 @@ burger.addEventListener('click', () => {
         }
     });
     
-    // Burger animation
-    burger.classList.toggle('toggle');
+    // Prevent body scroll when menu is open
+    document.body.style.overflow = nav.classList.contains('active') ? 'hidden' : '';
+}
+
+burger.addEventListener('click', () => {
+    toggleMenu();
     createGlitchEffect(burger);
 });
 
-// Close mobile menu when clicking a link
-navLinks.forEach(link => {
-    link.addEventListener('click', () => {
-        if (nav.classList.contains('active')) {
-            nav.classList.remove('active');
-            burger.classList.remove('toggle');
-            navLinks.forEach(link => {
-                link.style.animation = '';
-            });
-        }
-    });
+// Close menu when clicking outside
+document.addEventListener('click', (e) => {
+    if (nav.classList.contains('active') && 
+        !nav.contains(e.target) && 
+        !burger.contains(e.target)) {
+        toggleMenu();
+    }
 });
 
 // Smooth scrolling with offset
@@ -100,6 +127,14 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
 // Form submission with loading state
 contactForm.addEventListener('submit', async (e) => {
     e.preventDefault();
+    
+    // Prevent double submission
+    if (submitBtn.disabled) return;
+    
+    // Hide keyboard on mobile after form submission
+    if (document.activeElement) {
+        document.activeElement.blur();
+    }
     
     // Get form data
     const formData = {
@@ -149,6 +184,12 @@ contactForm.addEventListener('submit', async (e) => {
 
 // Notification system
 function showNotification(message, type = 'info') {
+    // Remove existing notifications
+    const existingNotifications = document.querySelectorAll('.notification');
+    existingNotifications.forEach(notification => {
+        notification.remove();
+    });
+
     const notification = document.createElement('div');
     notification.className = `notification ${type}`;
     notification.innerHTML = `
@@ -163,6 +204,11 @@ function showNotification(message, type = 'info') {
     
     // Add glitch effect
     createGlitchEffect(notification);
+    
+    // Show notification with proper positioning
+    requestAnimationFrame(() => {
+        notification.classList.add('show');
+    });
     
     // Animate progress bar
     const progress = notification.querySelector('.notification-progress');
@@ -306,4 +352,65 @@ document.addEventListener('DOMContentLoaded', () => {
     setInterval(() => {
         scanline.style.opacity = Math.random() * 0.5;
     }, 100);
+});
+
+// Add passive event listeners for better scroll performance
+document.addEventListener('touchstart', () => {}, { passive: true });
+document.addEventListener('touchmove', () => {}, { passive: true });
+
+// Handle orientation changes
+window.addEventListener('orientationchange', () => {
+    // Close menu on orientation change
+    if (nav.classList.contains('active')) {
+        toggleMenu();
+    }
+    
+    // Reset any fixed positioning
+    setTimeout(() => {
+        window.scrollTo(0, window.scrollY);
+    }, 100);
+});
+
+// Optimize scroll performance
+let scrollTimeout;
+window.addEventListener('scroll', () => {
+    if (!scrollTimeout) {
+        scrollTimeout = setTimeout(() => {
+            scrollTimeout = null;
+            const windowHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            const scrolled = (window.scrollY / windowHeight) * 100;
+            scrollProgress.style.width = `${scrolled}%`;
+
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+
+            // Update active navigation
+            updateActiveNavigation();
+        }, 100);
+    }
+});
+
+// Handle touch events for project cards
+document.querySelectorAll('.project-card').forEach(card => {
+    let touchStartY = 0;
+    let touchEndY = 0;
+
+    card.addEventListener('touchstart', (e) => {
+        touchStartY = e.changedTouches[0].screenY;
+    });
+
+    card.addEventListener('touchend', (e) => {
+        touchEndY = e.changedTouches[0].screenY;
+        if (Math.abs(touchEndY - touchStartY) < 10) {
+            // If it's a tap (not a swipe)
+            card.classList.add('hover');
+            createGlitchEffect(card);
+            setTimeout(() => {
+                card.classList.remove('hover');
+            }, 1000);
+        }
+    });
 }); 
