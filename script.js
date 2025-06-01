@@ -681,14 +681,16 @@ function initBinaryRain() {
         // Binary characters
         const binaryChars = '01';
         
-        // Set up the drops
-        const fontSize = 14;
-        let columns = Math.floor(canvas.width / fontSize);
+        // Set up the drops - increased font size and reduced density
+        const fontSize = 16; // Increased font size
+        let columns = Math.floor(canvas.width / (fontSize * 1.5)); // Reduced density by increasing spacing
         let drops = [];
+        let frameCount = 0; // Counter for frames to slow down animation
+        let frameDelay = 3; // Only update every 3 frames
         
         // Initialize drops at random positions
         const initDrops = () => {
-            columns = Math.floor(canvas.width / fontSize);
+            columns = Math.floor(canvas.width / (fontSize * 1.5)); // Maintain reduced density on resize
             drops = [];
             for (let i = 0; i < columns; i++) {
                 drops[i] = Math.floor(Math.random() * canvas.height / fontSize);
@@ -701,28 +703,41 @@ function initBinaryRain() {
         function draw() {
             if (!ctx) return;
             
-            // Semi-transparent black background to create fade effect
-            ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+            // Semi-transparent black background to create fade effect - increased opacity for slower trail
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.08)'; // Increased opacity for slower trail effect
             ctx.fillRect(0, 0, canvas.width, canvas.height);
             
             // Set text color and font
             ctx.fillStyle = '#00ff9d';
             ctx.font = `${fontSize}px monospace`;
             
-            // Draw each character
-            for (let i = 0; i < drops.length; i++) {
-                // Random binary character
-                const text = binaryChars.charAt(Math.floor(Math.random() * binaryChars.length));
-                
-                // Draw the character
-                ctx.fillText(text, i * fontSize, drops[i] * fontSize);
-                
-                // Move the drop down
-                drops[i]++;
-                
-                // Random reset to top when drop reaches bottom
-                if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
-                    drops[i] = 0;
+            // Only update positions on certain frames to slow down the animation
+            frameCount++;
+            if (frameCount % frameDelay === 0) { // Only update every few frames
+                // Draw each character
+                for (let i = 0; i < drops.length; i++) {
+                    // Random binary character
+                    const text = binaryChars.charAt(Math.floor(Math.random() * binaryChars.length));
+                    
+                    // Draw the character
+                    ctx.fillText(text, i * (fontSize * 1.5), drops[i] * fontSize);
+                    
+                    // Move the drop down - slower movement
+                    // Only move some drops each frame for varied speeds
+                    if (Math.random() > 0.3) { // 70% chance to move each drop
+                        drops[i]++;
+                    }
+                    
+                    // Random reset to top when drop reaches bottom
+                    if (drops[i] * fontSize > canvas.height && Math.random() > 0.99) { // Reduced chance of resetting
+                        drops[i] = 0;
+                    }
+                }
+            } else {
+                // Just redraw existing characters without moving them on other frames
+                for (let i = 0; i < drops.length; i++) {
+                    const text = binaryChars.charAt(Math.floor(Math.random() * binaryChars.length));
+                    ctx.fillText(text, i * (fontSize * 1.5), drops[i] * fontSize);
                 }
             }
             
