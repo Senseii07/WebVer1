@@ -28,14 +28,134 @@
         </div>
     </nav>
 
-    <section id="home" class="hero">
-        <div class="hero-content">
-            <h1 class="glitch-text">SYSTEM_ACTIVATED</h1>
-            <p class="cyber-text">> INITIALIZING NEURAL INTERFACE...</p>
-            <p class="cyber-text">> CONNECTING TO THE MATRIX...</p>
-            <p class="cyber-text">> WELCOME TO THE FUTURE OF WEB DEVELOPMENT</p>
-            <a href="#contact" class="cta-button">INITIALIZE CONNECTION</a>
+    <div class="hero-wrapper">
+        <!-- Background Elements -->
+        <div class="cyber-grid"></div>
+        <div class="tech-orbs">
+            <div class="tech-orb"></div>
+            <div class="tech-orb"></div>
+            <div class="tech-orb"></div>
         </div>
+        <div id="binary-rain"></div>
+        <div class="noise-overlay"></div>
+        
+        <!-- Hero Content -->
+        <section id="home" class="hero">
+            <div class="hero-content">
+                <!-- Left Column - Terminal & Info -->
+                <div class="hero-left">
+                    <div class="status-badge">
+                        <span class="status-dot"></span>
+                        <span class="status-text">ONLINE</span>
+                    </div>
+                    
+                    <div class="hero-header">
+                        <h1 class="glitch-text">Welcome<span class="accent">!!</span></h1>
+                        <div class="hero-tagline">
+                            <span class="tag-bracket">{</span>
+                            <p class="hero-subtitle">Python Developer & Designer</p>
+                            <span class="tag-bracket">}</span>
+                        </div>
+                    </div>
+                    
+                    <div class="hero-terminal">
+                        <div class="terminal-header">
+                            <div class="terminal-controls">
+                                <span class="terminal-btn red"></span>
+                                <span class="terminal-btn yellow"></span>
+                                <span class="terminal-btn green"></span>
+                            </div>
+                            <span class="terminal-title">user@Sensei:~$</span>
+                        </div>
+                        <div class="terminal-content">
+                            <!-- Terminal content will be dynamically populated by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Right Column - Stats & CTA -->
+                <div class="hero-right">
+                    <!-- Stats Cards -->
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-code"></i>
+                            </div>
+                            <div class="stat-content">
+                                <div class="stat-number" data-value="5">0</div>
+                                <div class="stat-label">YEARS EXP</div>
+                            </div>
+                        </div>
+                        
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-laptop-code"></i>
+                            </div>
+                            <div class="stat-content">
+                                <div class="stat-number" data-value="50">0</div>
+                                <div class="stat-label">PROJECTS</div>
+                            </div>
+                        </div>
+                        
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <div class="stat-content">
+                                <div class="stat-number" data-value="15">0</div>
+                                <div class="stat-label">CLIENTS</div>
+                            </div>
+                        </div>
+                        
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-award"></i>
+                            </div>
+                            <div class="stat-content">
+                                <div class="stat-number" data-value="8">0</div>
+                                <div class="stat-label">AWARDS</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Call to Action Buttons -->
+                    <div class="cta-buttons">
+                        <a href="#projects" class="cta-btn primary">
+                            <i class="fas fa-project-diagram"></i> VIEW PROJECTS
+                        </a>
+                        <a href="#contact" class="cta-btn secondary">
+                            <i class="fas fa-paper-plane"></i> CONTACT ME
+                        </a>
+                    </div>
+                    
+                    <!-- Social Links -->
+                    <div class="social-links">
+                        <a href="#" class="social-link" aria-label="GitHub">
+                            <i class="fab fa-github"></i>
+                        </a>
+                        <a href="#" class="social-link" aria-label="LinkedIn">
+                            <i class="fab fa-linkedin"></i>
+                        </a>
+                        <a href="#" class="social-link" aria-label="Twitter">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="#" class="social-link" aria-label="Instagram">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Tech Stack -->
+            <div class="tech-stack">
+                <div class="tech-item" data-tooltip="HTML5"><i class="fab fa-html5"></i></div>
+                <div class="tech-item" data-tooltip="CSS3"><i class="fab fa-css3-alt"></i></div>
+                <div class="tech-item" data-tooltip="JavaScript"><i class="fab fa-js"></i></div>
+                <div class="tech-item" data-tooltip="React"><i class="fab fa-react"></i></div>
+                <div class="tech-item" data-tooltip="Node.js"><i class="fab fa-node"></i></div>
+                <div class="tech-item" data-tooltip="Python"><i class="fab fa-python"></i></div>
+            </div>
+        </section>
     </section>
 
     <section id="about" class="about">
