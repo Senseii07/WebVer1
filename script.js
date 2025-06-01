@@ -3,16 +3,52 @@
 document.addEventListener('DOMContentLoaded', function() {
     console.log('DOM fully loaded, initializing all components...');
     
-    // Initialize all components
+    // Initialize all components with a longer delay to ensure everything is ready
+    // This helps with GitHub Pages and other hosting environments
     setTimeout(() => {
-        initTerminal();
-        initSkillBars();
-        initStatsCounters();
-        initGlitchText();
-        initBinaryRain();
-        initParticles();
-    }, 100); // Small delay to ensure DOM is ready
+        console.log('Starting component initialization...');
+        try {
+            initTerminal();
+            console.log('Terminal initialized');
+            
+            initSkillBars();
+            console.log('Skill bars initialized');
+            
+            initStatsCounters();
+            console.log('Stats counters initialized');
+            
+            initGlitchText();
+            console.log('Glitch text initialized');
+            
+            initBinaryRain();
+            console.log('Binary rain initialized');
+            
+            initParticles();
+            console.log('Particles initialized');
+            
+            console.log('All components initialized successfully');
+        } catch (error) {
+            console.error('Error during initialization:', error);
+        }
+    }, 500); // Increased delay to ensure DOM is fully ready
 });
+
+// Fallback initialization in case DOMContentLoaded already fired
+if (document.readyState === 'complete' || document.readyState === 'interactive') {
+    console.log('Document already loaded, initializing with fallback...');
+    setTimeout(() => {
+        try {
+            initTerminal();
+            initSkillBars();
+            initStatsCounters();
+            initGlitchText();
+            initBinaryRain();
+            initParticles();
+        } catch (error) {
+            console.error('Error during fallback initialization:', error);
+        }
+    }, 1000);
+}
 
 const themeToggle = document.querySelector('.theme-toggle');
 const html = document.documentElement;
@@ -776,171 +812,279 @@ function initGlitchText() {
 // Terminal typing effect with interactive commands
 function initTerminal() {
     console.log('Initializing terminal...');
-    const terminalContent = document.querySelector('.terminal-content');
-    if (!terminalContent) {
-        console.error('Terminal content element not found');
-        return;
+    
+    // Ensure the terminal content element exists
+    let terminalContent = document.querySelector('.terminal-content');
+    let attempts = 0;
+    const maxAttempts = 5;
+    
+    // If terminal content is not found, try again a few times with increasing delays
+    function findTerminalWithRetry() {
+        if (terminalContent) {
+            console.log('Terminal content found, proceeding with initialization');
+            setupTerminal(terminalContent);
+            return;
+        }
+        
+        attempts++;
+        if (attempts <= maxAttempts) {
+            console.log(`Terminal content not found, retrying (${attempts}/${maxAttempts})...`);
+            setTimeout(() => {
+                terminalContent = document.querySelector('.terminal-content');
+                findTerminalWithRetry();
+            }, attempts * 200); // Increasing delay with each attempt
+        } else {
+            console.error('Terminal content element not found after multiple attempts');
+        }
     }
     
-    try {
-        // Clear terminal initially
-        terminalContent.innerHTML = '';
-        
-        // Define terminal commands and responses
-        const commands = [
-            { 
-                cmd: 'whoami', 
-                response: 'Cyberpunk Developer & Digital Architect'
-            },
-            { 
-                cmd: 'skills --list', 
-                response: 'Frontend Development\nUI/UX Design\nCreative Coding\nInteractive Experiences'
-            },
-            { 
-                cmd: 'projects --featured', 
-                response: 'Neural Interface (2024)\nCyber Security System (2023)\nVR Experience (2022)'
-            },
-            {
-                cmd: 'contact --info',
-                response: 'Email: cyber@dev.com\nLocation: Neo Tokyo'
-            }
-        ];
-        
-        // Add initial command line immediately
-        const initialLine = document.createElement('div');
-        initialLine.className = 'command-line';
-        
-        const initialPrompt = document.createElement('span');
-        initialPrompt.className = 'prompt';
-        initialPrompt.textContent = '> ';
-        initialLine.appendChild(initialPrompt);
-        
-        const initialContent = document.createElement('span');
-        initialContent.className = 'line-content';
-        initialContent.textContent = 'Initializing cyberpunk terminal...';
-        initialLine.appendChild(initialContent);
-        
-        terminalContent.appendChild(initialLine);
-        
-        // Function to add a new line to the terminal
-        function addLine(text, isCommand = false) {
-            if (!terminalContent) return null; // Safety check
+    // Start the retry process
+    findTerminalWithRetry();
+    
+    // Main terminal setup function
+    function setupTerminal(terminalContent) {
+        try {
+            // Clear terminal initially
+            terminalContent.innerHTML = '';
             
-            const line = document.createElement('div');
-            line.className = isCommand ? 'command-line' : 'response-line';
+            // Define terminal commands and responses
+            const commands = [
+                { 
+                    cmd: 'whoami', 
+                    response: 'Cyberpunk Developer & Digital Architect'
+                },
+                { 
+                    cmd: 'skills --list', 
+                    response: 'Frontend Development\nUI/UX Design\nCreative Coding\nInteractive Experiences'
+                },
+                { 
+                    cmd: 'projects --featured', 
+                    response: 'Neural Interface (2024)\nCyber Security System (2023)\nVR Experience (2022)'
+                },
+                {
+                    cmd: 'contact --info',
+                    response: 'Email: cyber@dev.com\nLocation: Neo Tokyo'
+                }
+            ];
             
-            if (isCommand) {
-                const prompt = document.createElement('span');
-                prompt.className = 'prompt';
-                prompt.textContent = '> ';
-                line.appendChild(prompt);
-            }
+            // Add initial command line immediately
+            const initialLine = document.createElement('div');
+            initialLine.className = 'command-line';
             
-            const content = document.createElement('span');
-            content.className = 'line-content';
-            line.appendChild(content);
+            const initialPrompt = document.createElement('span');
+            initialPrompt.className = 'prompt';
+            initialPrompt.textContent = '> ';
+            initialLine.appendChild(initialPrompt);
             
-            terminalContent.appendChild(line);
+            const initialContent = document.createElement('span');
+            initialContent.className = 'line-content';
+            initialContent.textContent = 'Initializing cyberpunk terminal...';
+            initialLine.appendChild(initialContent);
             
-            // Animate typing effect
-            let i = 0;
-            const text_arr = text.split('\n');
-            let currentLineIndex = 0;
+            terminalContent.appendChild(initialLine);
             
-            function typeWriter() {
-                if (!content || !terminalContent) return; // Safety check
+            // Function to add a new line to the terminal
+            function addLine(text, isCommand = false) {
+                if (!terminalContent || !document.body.contains(terminalContent)) {
+                    console.error('Terminal content no longer in DOM');
+                    return null; // Safety check
+                }
                 
-                if (currentLineIndex < text_arr.length) {
-                    const currentLine = text_arr[currentLineIndex];
+                const line = document.createElement('div');
+                line.className = isCommand ? 'command-line' : 'response-line';
+                
+                if (isCommand) {
+                    const prompt = document.createElement('span');
+                    prompt.className = 'prompt';
+                    prompt.textContent = '> ';
+                    line.appendChild(prompt);
+                }
+                
+                const content = document.createElement('span');
+                content.className = 'line-content';
+                line.appendChild(content);
+                
+                terminalContent.appendChild(line);
+                
+                // Simple non-animated text display as fallback
+                function setTextDirectly() {
+                    const formattedText = text.replace(/\n/g, '<br>');
+                    content.innerHTML = formattedText;
                     
-                    if (i < currentLine.length) {
-                        content.textContent += currentLine.charAt(i);
-                        i++;
-                        setTimeout(typeWriter, 30); // typing speed
-                    } else {
-                        // Move to next line if there is one
-                        if (currentLineIndex < text_arr.length - 1) {
-                            content.innerHTML += '<br>';
-                            currentLineIndex++;
-                            i = 0;
-                            setTimeout(typeWriter, 30);
-                        } else {
-                            // Add blinking cursor at the end
-                            if (!isCommand) {
-                                setTimeout(() => {
-                                    if (!line) return; // Safety check
-                                    
-                                    const cursor = document.createElement('span');
-                                    cursor.className = 'cursor';
-                                    line.appendChild(cursor);
-                                    
-                                    // Start next command after a delay
-                                    setTimeout(nextCommand, 1000);
-                                }, 500);
+                    // For non-command lines, add cursor and proceed to next command
+                    if (!isCommand) {
+                        const cursor = document.createElement('span');
+                        cursor.className = 'cursor';
+                        line.appendChild(cursor);
+                        setTimeout(nextCommand, 1000);
+                    }
+                }
+                
+                // Animate typing effect with error handling
+                let i = 0;
+                const text_arr = text.split('\n');
+                let currentLineIndex = 0;
+                let typingFailed = false;
+                
+                function typeWriter() {
+                    try {
+                        if (!content || !terminalContent || !document.body.contains(terminalContent)) {
+                            console.error('Terminal elements no longer available');
+                            typingFailed = true;
+                            return; // Safety check
+                        }
+                        
+                        if (currentLineIndex < text_arr.length) {
+                            const currentLine = text_arr[currentLineIndex];
+                            
+                            if (i < currentLine.length) {
+                                content.textContent += currentLine.charAt(i);
+                                i++;
+                                setTimeout(typeWriter, 30); // typing speed
+                            } else {
+                                // Move to next line if there is one
+                                if (currentLineIndex < text_arr.length - 1) {
+                                    content.innerHTML += '<br>';
+                                    currentLineIndex++;
+                                    i = 0;
+                                    setTimeout(typeWriter, 30);
+                                } else {
+                                    // Add blinking cursor at the end
+                                    if (!isCommand) {
+                                        setTimeout(() => {
+                                            try {
+                                                if (!line || !document.body.contains(line)) return; // Safety check
+                                                
+                                                const cursor = document.createElement('span');
+                                                cursor.className = 'cursor';
+                                                line.appendChild(cursor);
+                                                
+                                                // Start next command after a delay
+                                                setTimeout(nextCommand, 1000);
+                                            } catch (err) {
+                                                console.error('Error adding cursor:', err);
+                                                nextCommand(); // Try to continue anyway
+                                            }
+                                        }, 500);
+                                    }
+                                }
                             }
                         }
+                    } catch (err) {
+                        console.error('Error in typeWriter:', err);
+                        typingFailed = true;
+                        setTextDirectly(); // Fallback to direct text setting
                     }
+                }
+                
+                // Start typing with a fallback
+                try {
+                    typeWriter();
+                    
+                    // If typing fails, use the fallback after a short timeout
+                    setTimeout(() => {
+                        if (typingFailed) {
+                            console.log('Typing animation failed, using fallback');
+                            setTextDirectly();
+                        }
+                    }, 1000);
+                    
+                } catch (err) {
+                    console.error('Error starting typeWriter:', err);
+                    setTextDirectly(); // Fallback
+                }
+                
+                // Scroll to bottom of terminal
+                try {
+                    if (terminalContent) {
+                        terminalContent.scrollTop = terminalContent.scrollHeight;
+                    }
+                } catch (err) {
+                    console.error('Error scrolling terminal:', err);
+                }
+                
+                return line;
+            }
+            
+            // Start typing commands sequentially
+            let commandIndex = 0;
+            
+            function nextCommand() {
+                try {
+                    if (!terminalContent || !document.body.contains(terminalContent)) {
+                        console.error('Terminal content no longer in DOM');
+                        return; // Safety check
+                    }
+                    
+                    if (commandIndex < commands.length) {
+                        const command = commands[commandIndex];
+                        
+                        // Type the command
+                        addLine(command.cmd, true);
+                        
+                        // Type the response after a delay
+                        setTimeout(() => {
+                            addLine(command.response);
+                            commandIndex++;
+                        }, 800);
+                    } else {
+                        // Add final cursor when all commands are done
+                        try {
+                            const finalLine = document.createElement('div');
+                            finalLine.className = 'command-line';
+                            
+                            const prompt = document.createElement('span');
+                            prompt.className = 'prompt';
+                            prompt.textContent = '> ';
+                            finalLine.appendChild(prompt);
+                            
+                            const cursor = document.createElement('span');
+                            cursor.className = 'cursor';
+                            finalLine.appendChild(cursor);
+                            
+                            terminalContent.appendChild(finalLine);
+                        } catch (err) {
+                            console.error('Error adding final cursor:', err);
+                        }
+                    }
+                } catch (err) {
+                    console.error('Error in nextCommand:', err);
                 }
             }
             
-            typeWriter();
+            // Start the first command after a short delay
+            setTimeout(() => {
+                try {
+                    // Clear the initial line
+                    if (terminalContent && document.body.contains(terminalContent)) {
+                        terminalContent.innerHTML = '';
+                        // Start the command sequence
+                        nextCommand();
+                    }
+                } catch (err) {
+                    console.error('Error starting command sequence:', err);
+                }
+            }, 1500);
             
-            // Scroll to bottom of terminal
-            if (terminalContent) {
-                terminalContent.scrollTop = terminalContent.scrollHeight;
-            }
+            console.log('Terminal initialized successfully');
+        } catch (error) {
+            console.error('Error in terminal setup:', error);
             
-            return line;
-        }
-        
-        // Start typing commands sequentially
-        let commandIndex = 0;
-        
-        function nextCommand() {
-            if (!terminalContent) return; // Safety check
-            
-            if (commandIndex < commands.length) {
-                const command = commands[commandIndex];
-                
-                // Type the command
-                addLine(command.cmd, true);
-                
-                // Type the response after a delay
-                setTimeout(() => {
-                    addLine(command.response);
-                    commandIndex++;
-                }, 800);
-            } else {
-                // Add final cursor when all commands are done
-                const finalLine = document.createElement('div');
-                finalLine.className = 'command-line';
-                
-                const prompt = document.createElement('span');
-                prompt.className = 'prompt';
-                prompt.textContent = '> ';
-                finalLine.appendChild(prompt);
-                
-                const cursor = document.createElement('span');
-                cursor.className = 'cursor';
-                finalLine.appendChild(cursor);
-                
-                terminalContent.appendChild(finalLine);
+            // Emergency fallback - just display static content
+            try {
+                if (terminalContent) {
+                    terminalContent.innerHTML = `
+                        <div class="command-line"><span class="prompt">> </span><span class="line-content">whoami</span></div>
+                        <div class="response-line"><span class="line-content">Cyberpunk Developer & Digital Architect</span></div>
+                        <div class="command-line"><span class="prompt">> </span><span class="line-content">skills --list</span></div>
+                        <div class="response-line"><span class="line-content">Frontend Development<br>UI/UX Design<br>Creative Coding<br>Interactive Experiences</span></div>
+                        <div class="command-line"><span class="prompt">> </span><span class="cursor"></span></div>
+                    `;
+                }
+            } catch (fallbackError) {
+                console.error('Even fallback failed:', fallbackError);
             }
         }
-        
-        // Start the first command after a short delay
-        setTimeout(() => {
-            // Clear the initial line
-            if (terminalContent) {
-                terminalContent.innerHTML = '';
-                // Start the command sequence
-                nextCommand();
-            }
-        }, 1500);
-        
-        console.log('Terminal initialized successfully');
-    } catch (error) {
-        console.error('Error initializing terminal:', error);
     }
 }
 
