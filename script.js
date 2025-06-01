@@ -4,12 +4,14 @@ document.addEventListener('DOMContentLoaded', function() {
     console.log('DOM fully loaded, initializing all components...');
     
     // Initialize all components
-    initTerminal();
-    initSkillBars();
-    initStatsCounters();
-    initGlitchText();
-    initBinaryRain();
-    initParticles();
+    setTimeout(() => {
+        initTerminal();
+        initSkillBars();
+        initStatsCounters();
+        initGlitchText();
+        initBinaryRain();
+        initParticles();
+    }, 100); // Small delay to ensure DOM is ready
 });
 
 const themeToggle = document.querySelector('.theme-toggle');
@@ -642,62 +644,105 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // Initialize binary rain animation in the background
 function initBinaryRain() {
+    console.log('Initializing binary rain...');
     const canvas = document.getElementById('binary-rain');
-    if (!canvas) return;
-    
-    const ctx = canvas.getContext('2d');
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-    
-    // Binary characters
-    const binaryChars = '01';
-    
-    // Set up the drops
-    const fontSize = 14;
-    const columns = Math.floor(canvas.width / fontSize);
-    const drops = [];
-    
-    // Initialize drops at random positions
-    for (let i = 0; i < columns; i++) {
-        drops[i] = Math.floor(Math.random() * canvas.height / fontSize);
+    if (!canvas) {
+        console.error('Binary rain canvas not found');
+        return;
     }
     
-    // Drawing function
-    function draw() {
-        // Semi-transparent black background to create fade effect
-        ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        
-        // Set text color and font
-        ctx.fillStyle = '#00ff9d';
-        ctx.font = `${fontSize}px monospace`;
-        
-        // Draw each character
-        for (let i = 0; i < drops.length; i++) {
-            // Random binary character
-            const text = binaryChars.charAt(Math.floor(Math.random() * binaryChars.length));
-            
-            // Draw the character
-            ctx.fillText(text, i * fontSize, drops[i] * fontSize);
-            
-            // Move the drop down
-            drops[i]++;
-            
-            // Random reset to top when drop reaches bottom
-            if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
-                drops[i] = 0;
-            }
+    // Make sure we're working with a canvas element
+    if (!(canvas instanceof HTMLCanvasElement)) {
+        console.error('Binary rain element is not a canvas');
+        return;
+    }
+    
+    try {
+        const ctx = canvas.getContext('2d');
+        if (!ctx) {
+            console.error('Could not get 2D context from canvas');
+            return;
         }
+        
+        // Set canvas dimensions to match parent container
+        const updateCanvasSize = () => {
+            const parent = canvas.parentElement;
+            if (parent) {
+                canvas.width = parent.offsetWidth;
+                canvas.height = parent.offsetHeight;
+            } else {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            }
+        };
+        
+        updateCanvasSize();
+        
+        // Binary characters
+        const binaryChars = '01';
+        
+        // Set up the drops
+        const fontSize = 14;
+        let columns = Math.floor(canvas.width / fontSize);
+        let drops = [];
+        
+        // Initialize drops at random positions
+        const initDrops = () => {
+            columns = Math.floor(canvas.width / fontSize);
+            drops = [];
+            for (let i = 0; i < columns; i++) {
+                drops[i] = Math.floor(Math.random() * canvas.height / fontSize);
+            }
+        };
+        
+        initDrops();
+        
+        // Drawing function
+        function draw() {
+            if (!ctx) return;
+            
+            // Semi-transparent black background to create fade effect
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Set text color and font
+            ctx.fillStyle = '#00ff9d';
+            ctx.font = `${fontSize}px monospace`;
+            
+            // Draw each character
+            for (let i = 0; i < drops.length; i++) {
+                // Random binary character
+                const text = binaryChars.charAt(Math.floor(Math.random() * binaryChars.length));
+                
+                // Draw the character
+                ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+                
+                // Move the drop down
+                drops[i]++;
+                
+                // Random reset to top when drop reaches bottom
+                if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+                    drops[i] = 0;
+                }
+            }
+            
+            // Continue animation loop
+            requestAnimationFrame(draw);
+        }
+        
+        // Start animation loop using requestAnimationFrame instead of setInterval
+        requestAnimationFrame(draw);
+        
+        // Resize handler
+        window.addEventListener('resize', () => {
+            updateCanvasSize();
+            initDrops();
+        });
+        
+        console.log('Binary rain initialized successfully');
+    } catch (error) {
+        console.error('Error initializing binary rain:', error);
     }
-    
-    // Animation loop
-    setInterval(draw, 50);
-    
-    // Resize handler
-    window.addEventListener('resize', () => {
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-    });
 }
 
 // Initialize glitch text effect on headings
@@ -722,148 +767,166 @@ function initTerminal() {
         return;
     }
     
-    // Clear terminal initially
-    terminalContent.innerHTML = '';
-    
-    // Define terminal commands and responses
-    const commands = [
-        { 
-            cmd: 'whoami', 
-            response: 'Cyberpunk Developer & Digital Architect'
-        },
-        { 
-            cmd: 'skills --list', 
-            response: 'Frontend Development\nUI/UX Design\nCreative Coding\nInteractive Experiences'
-        },
-        { 
-            cmd: 'projects --featured', 
-            response: 'Neural Interface (2024)\nCyber Security System (2023)\nVR Experience (2022)'
-        },
-        {
-            cmd: 'contact --info',
-            response: 'Email: cyber@dev.com\nLocation: Neo Tokyo'
-        }
-    ];
-    
-    // Add initial command line immediately
-    const initialLine = document.createElement('div');
-    initialLine.className = 'command-line';
-    
-    const initialPrompt = document.createElement('span');
-    initialPrompt.className = 'prompt';
-    initialPrompt.textContent = '> ';
-    initialLine.appendChild(initialPrompt);
-    
-    const initialContent = document.createElement('span');
-    initialContent.className = 'line-content';
-    initialContent.textContent = 'Initializing cyberpunk terminal...';
-    initialLine.appendChild(initialContent);
-    
-    terminalContent.appendChild(initialLine);
-    
-    // Function to add a new line to the terminal
-    function addLine(text, isCommand = false) {
-        const line = document.createElement('div');
-        line.className = isCommand ? 'command-line' : 'response-line';
+    try {
+        // Clear terminal initially
+        terminalContent.innerHTML = '';
         
-        if (isCommand) {
-            const prompt = document.createElement('span');
-            prompt.className = 'prompt';
-            prompt.textContent = '> ';
-            line.appendChild(prompt);
-        }
+        // Define terminal commands and responses
+        const commands = [
+            { 
+                cmd: 'whoami', 
+                response: 'Cyberpunk Developer & Digital Architect'
+            },
+            { 
+                cmd: 'skills --list', 
+                response: 'Frontend Development\nUI/UX Design\nCreative Coding\nInteractive Experiences'
+            },
+            { 
+                cmd: 'projects --featured', 
+                response: 'Neural Interface (2024)\nCyber Security System (2023)\nVR Experience (2022)'
+            },
+            {
+                cmd: 'contact --info',
+                response: 'Email: cyber@dev.com\nLocation: Neo Tokyo'
+            }
+        ];
         
-        const content = document.createElement('span');
-        content.className = 'line-content';
-        line.appendChild(content);
+        // Add initial command line immediately
+        const initialLine = document.createElement('div');
+        initialLine.className = 'command-line';
         
-        terminalContent.appendChild(line);
+        const initialPrompt = document.createElement('span');
+        initialPrompt.className = 'prompt';
+        initialPrompt.textContent = '> ';
+        initialLine.appendChild(initialPrompt);
         
-        // Animate typing effect
-        let i = 0;
-        const text_arr = text.split('\n');
-        let currentLineIndex = 0;
+        const initialContent = document.createElement('span');
+        initialContent.className = 'line-content';
+        initialContent.textContent = 'Initializing cyberpunk terminal...';
+        initialLine.appendChild(initialContent);
         
-        function typeWriter() {
-            if (currentLineIndex < text_arr.length) {
-                const currentLine = text_arr[currentLineIndex];
+        terminalContent.appendChild(initialLine);
+        
+        // Function to add a new line to the terminal
+        function addLine(text, isCommand = false) {
+            if (!terminalContent) return null; // Safety check
+            
+            const line = document.createElement('div');
+            line.className = isCommand ? 'command-line' : 'response-line';
+            
+            if (isCommand) {
+                const prompt = document.createElement('span');
+                prompt.className = 'prompt';
+                prompt.textContent = '> ';
+                line.appendChild(prompt);
+            }
+            
+            const content = document.createElement('span');
+            content.className = 'line-content';
+            line.appendChild(content);
+            
+            terminalContent.appendChild(line);
+            
+            // Animate typing effect
+            let i = 0;
+            const text_arr = text.split('\n');
+            let currentLineIndex = 0;
+            
+            function typeWriter() {
+                if (!content || !terminalContent) return; // Safety check
                 
-                if (i < currentLine.length) {
-                    content.textContent += currentLine.charAt(i);
-                    i++;
-                    setTimeout(typeWriter, 30); // typing speed
-                } else {
-                    // Move to next line if there is one
-                    if (currentLineIndex < text_arr.length - 1) {
-                        content.innerHTML += '<br>';
-                        currentLineIndex++;
-                        i = 0;
-                        setTimeout(typeWriter, 30);
+                if (currentLineIndex < text_arr.length) {
+                    const currentLine = text_arr[currentLineIndex];
+                    
+                    if (i < currentLine.length) {
+                        content.textContent += currentLine.charAt(i);
+                        i++;
+                        setTimeout(typeWriter, 30); // typing speed
                     } else {
-                        // Add blinking cursor at the end
-                        if (!isCommand) {
-                            setTimeout(() => {
-                                const cursor = document.createElement('span');
-                                cursor.className = 'cursor';
-                                line.appendChild(cursor);
-                                
-                                // Start next command after a delay
-                                setTimeout(nextCommand, 1000);
-                            }, 500);
+                        // Move to next line if there is one
+                        if (currentLineIndex < text_arr.length - 1) {
+                            content.innerHTML += '<br>';
+                            currentLineIndex++;
+                            i = 0;
+                            setTimeout(typeWriter, 30);
+                        } else {
+                            // Add blinking cursor at the end
+                            if (!isCommand) {
+                                setTimeout(() => {
+                                    if (!line) return; // Safety check
+                                    
+                                    const cursor = document.createElement('span');
+                                    cursor.className = 'cursor';
+                                    line.appendChild(cursor);
+                                    
+                                    // Start next command after a delay
+                                    setTimeout(nextCommand, 1000);
+                                }, 500);
+                            }
                         }
                     }
                 }
             }
+            
+            typeWriter();
+            
+            // Scroll to bottom of terminal
+            if (terminalContent) {
+                terminalContent.scrollTop = terminalContent.scrollHeight;
+            }
+            
+            return line;
         }
         
-        typeWriter();
+        // Start typing commands sequentially
+        let commandIndex = 0;
         
-        // Scroll to bottom of terminal
-        terminalContent.scrollTop = terminalContent.scrollHeight;
-        
-        return line;
-    }
-    
-    // Start typing commands sequentially
-    let commandIndex = 0;
-    
-    function nextCommand() {
-        if (commandIndex < commands.length) {
-            const command = commands[commandIndex];
+        function nextCommand() {
+            if (!terminalContent) return; // Safety check
             
-            // Type the command
-            addLine(command.cmd, true);
-            
-            // Type the response after a delay
-            setTimeout(() => {
-                addLine(command.response);
-                commandIndex++;
-            }, 800);
-        } else {
-            // Add final cursor when all commands are done
-            const finalLine = document.createElement('div');
-            finalLine.className = 'command-line';
-            
-            const prompt = document.createElement('span');
-            prompt.className = 'prompt';
-            prompt.textContent = '> ';
-            finalLine.appendChild(prompt);
-            
-            const cursor = document.createElement('span');
-            cursor.className = 'cursor';
-            finalLine.appendChild(cursor);
-            
-            terminalContent.appendChild(finalLine);
+            if (commandIndex < commands.length) {
+                const command = commands[commandIndex];
+                
+                // Type the command
+                addLine(command.cmd, true);
+                
+                // Type the response after a delay
+                setTimeout(() => {
+                    addLine(command.response);
+                    commandIndex++;
+                }, 800);
+            } else {
+                // Add final cursor when all commands are done
+                const finalLine = document.createElement('div');
+                finalLine.className = 'command-line';
+                
+                const prompt = document.createElement('span');
+                prompt.className = 'prompt';
+                prompt.textContent = '> ';
+                finalLine.appendChild(prompt);
+                
+                const cursor = document.createElement('span');
+                cursor.className = 'cursor';
+                finalLine.appendChild(cursor);
+                
+                terminalContent.appendChild(finalLine);
+            }
         }
+        
+        // Start the first command after a short delay
+        setTimeout(() => {
+            // Clear the initial line
+            if (terminalContent) {
+                terminalContent.innerHTML = '';
+                // Start the command sequence
+                nextCommand();
+            }
+        }, 1500);
+        
+        console.log('Terminal initialized successfully');
+    } catch (error) {
+        console.error('Error initializing terminal:', error);
     }
-    
-    // Start the first command after a short delay
-    setTimeout(() => {
-        // Clear the initial line
-        terminalContent.innerHTML = '';
-        // Start the command sequence
-        nextCommand();
-    }, 1500);
 }
 
 // Initialize stats counters with animated counting effect
