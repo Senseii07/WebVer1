@@ -1,0 +1,110 @@
+/* Binary Rain Fallback CSS for browsers without canvas support */
+
+/* Container for fallback binary rain */
+.binary-rain-fallback {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    z-index: 0;
+    pointer-events: none;
+}
+
+/* Individual binary digit columns */
+.binary-digit {
+    position: absolute;
+    top: -100px;
+    color: #00ff9d;
+    font-family: monospace, Courier, "Courier New";
+    font-size: 16px;
+    line-height: 1;
+    text-align: center;
+    white-space: pre;
+    opacity: 0.7;
+    animation-name: binary-fall;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+}
+
+/* Animation for falling digits */
+@keyframes binary-fall {
+    0% {
+        transform: translateY(-100%);
+        opacity: 0;
+    }
+    10% {
+        opacity: 0.7;
+    }
+    90% {
+        opacity: 0.7;
+    }
+    100% {
+        transform: translateY(100vh);
+        opacity: 0;
+    }
+}
+
+/* For IE9 that doesn't support @keyframes */
+@-ms-keyframes binary-fall {
+    0% {
+        -ms-transform: translateY(-100%);
+        opacity: 0;
+    }
+    10% {
+        opacity: 0.7;
+    }
+    90% {
+        opacity: 0.7;
+    }
+    100% {
+        -ms-transform: translateY(100vh);
+        opacity: 0;
+    }
+}
+
+/* For older WebKit browsers */
+@-webkit-keyframes binary-fall {
+    0% {
+        -webkit-transform: translateY(-100%);
+        opacity: 0;
+    }
+    10% {
+        opacity: 0.7;
+    }
+    90% {
+        opacity: 0.7;
+    }
+    100% {
+        -webkit-transform: translateY(100vh);
+        opacity: 0;
+    }
+}
+
+/* For older Firefox browsers */
+@-moz-keyframes binary-fall {
+    0% {
+        -moz-transform: translateY(-100%);
+        opacity: 0;
+    }
+    10% {
+        opacity: 0.7;
+    }
+    90% {
+        opacity: 0.7;
+    }
+    100% {
+        -moz-transform: translateY(100vh);
+        opacity: 0;
+    }
+}
+
+/* IE8 and below fallback (no animation) */
+.binary-digit-static {
+    position: absolute;
+    color: #00ff9d;
+    font-family: monospace;
+    font-size: 16px;
+    opacity: 0.7;
+}
